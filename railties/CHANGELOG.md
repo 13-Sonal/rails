@@ -1,3 +1,11 @@
+*   Keep `disable_clear_and_finalize` when drawing routes that haven't loaded yet.
+
+    With lazy route loading, setting `disable_clear_and_finalize` and then
+    calling `draw` replaced the routes from `config/routes.rb` instead of adding
+    to them, because loading the routes first reset the flag to `false`.
+
+    *Sonal Sachdev*
+
 *   Detect Kamal in `bin/rails app:update`.
 
     The update command didn't pass `skip_kamal`, so it rendered config files

@@ -30,6 +30,7 @@ module Rails
       def reload!
         @load_lock.synchronize do
           previous_state, @load_state = @load_state, :loading
+          previous_disable_clear_and_finalize = route_sets.index_with(&:disable_clear_and_finalize)
           clear!
           load_paths
           finalize!
@@ -39,7 +40,7 @@ module Rails
           end
         ensure
           @load_state = previous_state
-          revert
+          revert(previous_disable_clear_and_finalize)
         end
       end
 
@@ -123,11 +124,11 @@ module Rails
         end
       end
 
-      def revert
+      def revert(previous_disable_clear_and_finalize)
         route_sets.each do |routes|
           next if routes.frozen?
 
-          routes.disable_clear_and_finalize = false
+          routes.disable_clear_and_finalize = previous_disable_clear_and_finalize.fetch(routes, false)
         end
       end
     end
